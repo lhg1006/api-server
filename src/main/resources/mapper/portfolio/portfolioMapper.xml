@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lhg.apiserver.db.portfolio.PortfolioDB">
+    <select id="getResumeData" resultType="com.lhg.apiserver.api.portfolio.vo.ResumeVO">
+        SELECT * FROM portfolio.resume
+    </select>
+
+    <select id="getCareerData" resultType="com.lhg.apiserver.api.portfolio.vo.CareerVO">
+        SELECT * FROM portfolio.career ORDER BY order_no DESC;
+    </select>
+</mapper>
