@@ -1,12 +1,15 @@
 package com.lhg.apiserver.api.portfolio.biz;
 
+import com.lhg.apiserver.api.portfolio.vo.AuthVO;
 import com.lhg.apiserver.api.portfolio.vo.CareerVO;
 import com.lhg.apiserver.api.portfolio.vo.ResumeVO;
 import com.lhg.apiserver.db.portfolio.PortfolioDB;
+import com.lhg.apiserver.utills.CookieUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -17,6 +20,7 @@ import java.util.Map;
 @Slf4j
 public class PortfolioService {
     private final PortfolioDB portfolioDB;
+    private final CookieUtil cookieUtil;
 
     public Map<String, Object> getResumeData(){
         Map<String, Object> resMap = new HashMap<>();
@@ -57,5 +61,28 @@ public class PortfolioService {
         }
 
         return resMap;
+    }
+
+    public int loginAuth(Map<String, Object> param, HttpServletResponse httpServletResponse){
+        int result = 0;
+        try {
+            AuthVO authVO = portfolioDB.loginAuth(param);
+
+            if(authVO != null  && authVO.getExistsFlag() == 1) {
+                Map<String, Object> cookieParam = new HashMap<>();
+
+                cookieParam.put("userId", param.get("email"));
+                cookieParam.put("userNo", authVO.getUserNo());
+                cookieParam.put("isAdmin", authVO.getIsAdmin());
+
+                cookieUtil.setCookie(httpServletResponse, cookieParam);
+                result = 1;
+            }else{
+                return result;
+            }
+        }catch (Exception e){
+            log.error("PortfolioService loginAuth ERROR ========> {}", e);
+        }
+        return result;
     }
 }

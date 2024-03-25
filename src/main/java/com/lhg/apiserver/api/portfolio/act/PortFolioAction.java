@@ -2,10 +2,9 @@ package com.lhg.apiserver.api.portfolio.act;
 
 import com.lhg.apiserver.api.portfolio.biz.PortfolioService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 
 @RestController
@@ -22,5 +21,10 @@ public class PortFolioAction {
     @GetMapping("/career")
     public Map<String,Object> careerData(){
         return portfolioService.getCareerData();
+    }
+
+    @PostMapping("/login/auth")
+    public int loginAuth(@RequestBody Map<String, Object> param, HttpServletResponse httpServletResponse){
+        return portfolioService.loginAuth(param, httpServletResponse);
     }
 }

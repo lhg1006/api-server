@@ -9,4 +9,16 @@
     <select id="getCareerData" resultType="com.lhg.apiserver.api.portfolio.vo.CareerVO">
         SELECT * FROM portfolio.career ORDER BY order_no DESC;
     </select>
+
+    <select id="loginAuth" parameterType="map" resultType="com.lhg.apiserver.api.portfolio.vo.AuthVO">
+        SELECT
+            EXISTS (
+                SELECT * FROM portfolio.user
+                WHERE user_id = #{email} AND user_pw = #{password}
+            ) AS exists_flag,
+            user_no,
+            CASE WHEN user_is_admin = 1 THEN true ELSE false END AS isAdmin
+        FROM portfolio.user
+        WHERE user_id = #{email} AND user_pw = #{password};
+    </select>
 </mapper>
