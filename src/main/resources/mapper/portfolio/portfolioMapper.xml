@@ -2,14 +2,37 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.lhg.apiserver.db.portfolio.PortfolioDB">
+    <!-- 이력서 데이터 -->
     <select id="getResumeData" resultType="com.lhg.apiserver.api.portfolio.vo.ResumeVO">
         SELECT * FROM portfolio.resume
     </select>
 
+    <!-- 경력기술서 데이터 -->
     <select id="getCareerData" resultType="com.lhg.apiserver.api.portfolio.vo.CareerVO">
         SELECT * FROM portfolio.career ORDER BY order_no DESC;
     </select>
 
+    <!-- 프로젝트 페이지당 데이터 -->
+    <select id="getProjectData" parameterType="map" resultType="list">
+        SELECT p.id,
+               p.title AS title,
+               (SELECT JSON_ARRAYAGG(image_path) FROM (SELECT DISTINCT image_path FROM portfolio.project_images WHERE project_id = p.id) AS image_paths) AS images,
+               (SELECT JSON_ARRAYAGG(content) FROM (SELECT DISTINCT content FROM portfolio.project_texts WHERE project_id = p.id) AS project_texts) AS texts
+        FROM portfolio.projects p
+        LIMIT #{pageNo} OFFSET #{offset};
+    </select>
+
+    <!-- 프로젝트 싱글 데이터 -->
+    <select id="getSingleProjectData" resultType="com.lhg.apiserver.api.portfolio.vo.projects.ProjectDataVO">
+        SELECT p.title AS title,
+               (SELECT JSON_ARRAYAGG(image_path) FROM (SELECT DISTINCT image_path FROM portfolio.project_images WHERE project_id = p.id) AS image_paths) AS images,
+               (SELECT JSON_ARRAYAGG(content) FROM (SELECT DISTINCT content FROM portfolio.project_texts WHERE project_id = p.id) AS text_contents) AS texts
+        FROM portfolio.projects p
+        WHERE p.id = #{projectId}
+        GROUP BY p.id, p.title;
+    </select>
+
+    <!-- 로그인 인증 -->
     <select id="loginAuth" parameterType="map" resultType="com.lhg.apiserver.api.portfolio.vo.AuthVO">
         SELECT
             EXISTS (
@@ -21,4 +44,24 @@
         FROM portfolio.user
         WHERE user_id = #{email} AND user_pw = #{password};
     </select>
+
+    <!-- 게시물 저장 -->
+    <insert id="saveProject" parameterType="com.lhg.apiserver.api.portfolio.vo.projects.ProjectsVO" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO portfolio.projects (title)
+        VALUES (#{title})
+    </insert>
+
+    <!-- 이미지 저장 -->
+    <insert id="saveProjectImg" parameterType="com.lhg.apiserver.api.portfolio.vo.projects.ProjectImgVO">
+        INSERT INTO portfolio.project_images (project_id, image_path)
+        VALUES (#{projectId}, #{imagePath})
+    </insert>
+
+    <!-- 텍스트 저장 -->
+    <insert id="saveProjectTxt" parameterType="com.lhg.apiserver.api.portfolio.vo.projects.ProjectTxtVO">
+        INSERT INTO portfolio.project_texts (project_id, content)
+        VALUES (#{projectId}, #{content})
+    </insert>
+
+
 </mapper>
