@@ -2,6 +2,7 @@ package com.lhg.apiserver.api.portfolio.act;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.lhg.apiserver.api.portfolio.biz.PortfolioService;
+import com.lhg.apiserver.api.portfolio.vo.projects.ProjectDataResVO;
 import com.lhg.apiserver.api.portfolio.vo.projects.ProjectParamVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -26,14 +27,18 @@ public class PortFolioAction {
         return portfolioService.getCareerData();
     }
 
+    @GetMapping("/project/data/count")
+    public int projectTotalCnt(){
+        return portfolioService.getProjectTotalCnt();
+    }
 
     @GetMapping("/project/data")
-    public List<ProjectParamVO> resumeData(Map<String,Object> param){
-        return portfolioService.getProjectData(param);
+    public List<ProjectDataResVO> resumeData(@RequestParam int pageNo){
+        return portfolioService.getProjectData(pageNo);
     }
 
     @GetMapping("/project/data/single")
-    public Map<String, Object> resumeData(@RequestParam String projectId) throws JsonProcessingException {
+    public ProjectDataResVO resumeData(@RequestParam String projectId) throws JsonProcessingException {
         return portfolioService.getSingleProjectData(projectId);
     }
 

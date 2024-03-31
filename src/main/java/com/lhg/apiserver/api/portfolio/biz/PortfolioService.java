@@ -12,10 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -65,29 +62,53 @@ public class PortfolioService {
         return resMap;
     }
 
-    public List<ProjectParamVO> getProjectData(Map<String, Object> param){
-        List<ProjectParamVO> resList = null;
-        try {
-            int pageNo = (int) param.get("pageNo");
-            int offset = (pageNo - 1) * 4;
-            param.put("offset", offset);
-
-            resList = portfolioDB.getProjectData(param);
-
-            if(resList == null){
-                ProjectParamVO dummy = new ProjectParamVO();
-                List<ProjectParamVO> dummyList = new ArrayList<>();
-                dummyList.add(dummy);
-                resList = dummyList;
-            }
+    public int getProjectTotalCnt(){
+        int totalCnt = 0;
+        try{
+            totalCnt = portfolioDB.getProjectTotalCnt();
         }catch (Exception e){
-            log.error("");
+            log.error("PortfolioService getProjectTotalCnt ERROR ======> {}", e);
+        }
+        return totalCnt;
+    }
+
+    public List<ProjectDataResVO> getProjectData(int pageNo) {
+        List<ProjectDataResVO> resList = new ArrayList<>();
+        try {
+            int pagePerCnt = 4;
+            int offset = (pageNo - 1) * 4;
+
+            List<ProjectDataVO> getList = portfolioDB.getProjectData(pagePerCnt, offset);
+
+            if (getList != null && !getList.isEmpty()) { // null 및 빈 리스트 체크 추가
+                for (ProjectDataVO projectDataVO : getList) {
+                    String jsonImages = projectDataVO.getImages();
+                    String jsonTexts = projectDataVO.getTexts();
+
+                    // ObjectMapper를 사용하여 JSON 문자열을 배열로 변환합니다.
+                    ObjectMapper objectMapper = new ObjectMapper();
+                    String[] imageArray = objectMapper.readValue(jsonImages, String[].class);
+                    String[] textArray = objectMapper.readValue(jsonTexts, String[].class);
+
+                    // 프로젝트 데이터에 이미지 및 텍스트 배열을 설정합니다.
+                    ProjectDataResVO dataResVO = new ProjectDataResVO();
+                    dataResVO.setAutoNo(projectDataVO.getAutoNo());
+                    dataResVO.setTitle(projectDataVO.getTitle());
+                    dataResVO.setImages(imageArray);
+                    dataResVO.setTexts(textArray);
+
+                    resList.add(dataResVO);
+                }
+            }
+        } catch (Exception e) {
+            log.error("PortfoiloService getProjectData ERROR ======> {}", e); // 오류 처리 수정
         }
         return resList;
     }
 
-    public Map<String, Object> getSingleProjectData(String projectId) throws JsonProcessingException {
-        Map<String, Object> resMap = new HashMap<>();
+    public ProjectDataResVO getSingleProjectData(String projectId) throws JsonProcessingException {
+        ProjectDataResVO dataResVO = new ProjectDataResVO();
+
         ProjectDataVO projectDataVO;
         projectDataVO = portfolioDB.getSingleProjectData(projectId);
 
@@ -99,12 +120,13 @@ public class PortfolioService {
             String[] imageArray = objectMapper.readValue(jsonImages, String[].class);
             String[] textArray = objectMapper.readValue(jsonTexts, String[].class);
 
-            resMap.put("title", projectDataVO.getTitle());
-            resMap.put("images", imageArray);
-            resMap.put("texts", textArray);
+            dataResVO.setAutoNo(projectDataVO.getAutoNo());
+            dataResVO.setTitle(projectDataVO.getTitle());
+            dataResVO.setImages(imageArray);
+            dataResVO.setTexts(textArray);
         }
 
-        return resMap;
+        return dataResVO;
     }
 
     public int loginAuth(Map<String, Object> param, HttpServletResponse httpServletResponse){

@@ -12,19 +12,24 @@
         SELECT * FROM portfolio.career ORDER BY order_no DESC;
     </select>
 
+    <select id="getProjectTotalCnt" resultType="int">
+        select COUNT(*) from portfolio.projects;
+    </select>
+
     <!-- 프로젝트 페이지당 데이터 -->
-    <select id="getProjectData" parameterType="map" resultType="list">
-        SELECT p.id,
+    <select id="getProjectData" resultType="com.lhg.apiserver.api.portfolio.vo.projects.ProjectDataVO">
+        SELECT p.id AS auto_no,
                p.title AS title,
                (SELECT JSON_ARRAYAGG(image_path) FROM (SELECT DISTINCT image_path FROM portfolio.project_images WHERE project_id = p.id) AS image_paths) AS images,
                (SELECT JSON_ARRAYAGG(content) FROM (SELECT DISTINCT content FROM portfolio.project_texts WHERE project_id = p.id) AS project_texts) AS texts
         FROM portfolio.projects p
-        LIMIT #{pageNo} OFFSET #{offset};
+        LIMIT #{pagePerCnt} OFFSET #{offset};
     </select>
 
     <!-- 프로젝트 싱글 데이터 -->
     <select id="getSingleProjectData" resultType="com.lhg.apiserver.api.portfolio.vo.projects.ProjectDataVO">
-        SELECT p.title AS title,
+        SELECT p.id AS auto_no,
+               p.title AS title,
                (SELECT JSON_ARRAYAGG(image_path) FROM (SELECT DISTINCT image_path FROM portfolio.project_images WHERE project_id = p.id) AS image_paths) AS images,
                (SELECT JSON_ARRAYAGG(content) FROM (SELECT DISTINCT content FROM portfolio.project_texts WHERE project_id = p.id) AS text_contents) AS texts
         FROM portfolio.projects p
