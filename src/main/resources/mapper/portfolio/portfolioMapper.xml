@@ -23,6 +23,7 @@
                (SELECT JSON_ARRAYAGG(image_path) FROM (SELECT DISTINCT image_path FROM portfolio.project_images WHERE project_id = p.id) AS image_paths) AS images,
                (SELECT JSON_ARRAYAGG(content) FROM (SELECT DISTINCT content FROM portfolio.project_texts WHERE project_id = p.id) AS project_texts) AS texts
         FROM portfolio.projects p
+        ORDER BY p.order_no
         LIMIT #{pagePerCnt} OFFSET #{offset};
     </select>
 

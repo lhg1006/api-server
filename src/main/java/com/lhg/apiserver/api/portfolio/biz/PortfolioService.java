@@ -84,12 +84,16 @@ public class PortfolioService {
                 for (ProjectDataVO projectDataVO : getList) {
                     String jsonImages = projectDataVO.getImages();
                     String jsonTexts = projectDataVO.getTexts();
-
+                    String[] imageArray = {};
+                    String[] textArray = {};
                     // ObjectMapper를 사용하여 JSON 문자열을 배열로 변환합니다.
                     ObjectMapper objectMapper = new ObjectMapper();
-                    String[] imageArray = objectMapper.readValue(jsonImages, String[].class);
-                    String[] textArray = objectMapper.readValue(jsonTexts, String[].class);
-
+                    if(jsonImages != null && !jsonImages.isEmpty()){
+                      imageArray = objectMapper.readValue(jsonImages, String[].class);
+                    }
+                    if(jsonTexts != null && !jsonTexts.isEmpty()){
+                      textArray = objectMapper.readValue(jsonTexts, String[].class);
+                    }
                     // 프로젝트 데이터에 이미지 및 텍스트 배열을 설정합니다.
                     ProjectDataResVO dataResVO = new ProjectDataResVO();
                     dataResVO.setAutoNo(projectDataVO.getAutoNo());
@@ -115,10 +119,16 @@ public class PortfolioService {
         if(projectDataVO != null){
             String jsonImages = projectDataVO.getImages();
             String jsonTexts = projectDataVO.getTexts();
+            String[] imageArray = {};
+            String[] textArray = {};
 
             ObjectMapper objectMapper = new ObjectMapper();
-            String[] imageArray = objectMapper.readValue(jsonImages, String[].class);
-            String[] textArray = objectMapper.readValue(jsonTexts, String[].class);
+            if(jsonImages != null && !jsonImages.isEmpty()){
+                imageArray = objectMapper.readValue(jsonImages, String[].class);
+            }
+            if(jsonTexts != null && !jsonTexts.isEmpty()){
+                textArray = objectMapper.readValue(jsonTexts, String[].class);
+            }
 
             dataResVO.setAutoNo(projectDataVO.getAutoNo());
             dataResVO.setTitle(projectDataVO.getTitle());
