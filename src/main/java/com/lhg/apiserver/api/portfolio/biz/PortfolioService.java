@@ -188,7 +188,7 @@ public class PortfolioService {
         Long projectId = projectsVO.getId();
 
         // 이미지 저장
-        List<String> imagePaths = List.of(projectParamVO.getImages());
+        String[] imagePaths = projectParamVO.getImages();
         for (String imagePath : imagePaths) {
             ProjectImgVO projectImgVO = new ProjectImgVO();
             projectImgVO.setProjectId(projectId);
@@ -198,7 +198,7 @@ public class PortfolioService {
         }
 
         // 텍스트 저장
-        List<String> texts = List.of(projectParamVO.getTexts());
+        String[] texts = projectParamVO.getTexts();
         for (String text : texts) {
             ProjectTxtVO projectTxtVO = new ProjectTxtVO();
             projectTxtVO.setProjectId(projectId);
