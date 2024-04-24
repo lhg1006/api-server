@@ -2,6 +2,10 @@
 
 이 프로젝트는 Spring Boot를 사용하여 개발되었습니다.
 
+### frontend link
+
+https://github.com/lhg1006/lhg-portfolio
+
 ### 버전 정보
 
 Spring Boot: 2.4.2
