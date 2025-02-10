@@ -52,11 +52,11 @@ bash
 ./gradlew build
 
 ## 🐳 Docker 지원
-bash
-이미지 빌드
-docker build -t api-server .
-컨테이너 실행
-docker run -p 8080:8080 api-server
+<p>bash</p>
+<p>이미지 빌드</p>
+<p>docker build -t api-server .</p>
+<p>컨테이너 실행</p>
+<p>docker run -p 8080:8080 api-server</p>
 
 ## 📂 프로젝트 구조
 <p>api-server/</p>
